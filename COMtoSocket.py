@@ -29,8 +29,7 @@ if __name__ == '__main__':
     else:
         print("serial open failed")
     while True:
-        data = recv(serial)
-        #print(data)  # str        
+        data = recv(serial)      
         tcpCliSock.send(data.encode('utf-8',"ignore"))
         data = tcpCliSock.recv(BUFSIZ)
         if not data:
