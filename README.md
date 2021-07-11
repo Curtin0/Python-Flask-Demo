@@ -18,7 +18,7 @@ Study Notes
 
 2、转换为字符串存到列表中
 
-3、转换为Json格式并通过Websocket协议发送给前端
+3、转换为JSON格式并通过Websocket协议发送给前端
 
 提供了一个web页面index.html作为前端测试页面
 
