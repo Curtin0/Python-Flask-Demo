@@ -4,7 +4,9 @@ Study Notes
 程序COMtoSocket
 
 1、接收RS232/485串口发来的hex格式数据
+
 2、不做处理
+
 3、通过Socket客户端发送出去
 
 提供了TCP/UDP测试工具用来验证
@@ -13,7 +15,9 @@ Study Notes
 程序CloudServer
 
 1、接收Socket客户端发来的hex格式数据
+
 2、转换为字符串存到列表中
+
 3、转换成json格式并通过Websocket协议发送给前端
 
 提供了index.html作为前端测试页面
