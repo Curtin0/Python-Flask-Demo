@@ -1,27 +1,38 @@
-from socket import *
-from time import ctime
- 
-HOST = '127.0.0.1'
-PORT = 20020
-BUFSIZ = 1024
-ADDR = (HOST,PORT)
- 
-tcpSerSock = socket(AF_INET,SOCK_STREAM)
-tcpSerSock.bind(ADDR)
-tcpSerSock.listen(5)
- 
+import socket
+import asyncio
+import websockets
+import time
+import json
+import binascii  
+import struct
+
+server = socket.socket() 
+server.bind(("localhost",20019)) 
+server.listen() 
+
 while True:
-    print('waiting for connection...')
-    tcpCliSock, addr = tcpSerSock.accept()
-    print('...connnecting from:', addr)
- 
-    while True:
-   
-            
-        data = tcpCliSock.recv(BUFSIZ)
-        if not data:
-            break
-        #tcpCliSock.send('[%s] %s' %(bytes(ctime(),'utf-8'),data))
-        tcpCliSock.send(('[%s] %s' % (ctime(), data)).encode())
-    tcpCliSock.close()
-tcpSerSock.close()
+  conn,addr = server.accept()
+  
+  while True:
+      data = conn.recv(1024)
+      conn.send(data)
+
+      data1 = bytes.decode(data)
+      data2 = list(data1)
+      
+      async def echo(websocket, path):
+        
+          while True:
+              message = json.dumps(data2)
+              await websocket.send(message)
+              await asyncio.sleep(3)
+              
+      start_server = websockets.serve(echo,'localhost',8080)
+      asyncio.get_event_loop().run_until_complete(start_server)
+      asyncio.get_event_loop().run_forever()
+      
+      if not data:
+          print("The connection has been disconnected")
+          break
+        
+  server.close()
