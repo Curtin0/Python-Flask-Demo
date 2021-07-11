@@ -7,4 +7,6 @@ Study Notes
 增加了CloudServer
 作用是接收Socket客户端发出的信息并通过Websocket协议发送json格式数据给前端
 
+index.html为前端测试页面
+
 ![1](https://user-images.githubusercontent.com/49359900/124698601-c78dc480-df1b-11eb-9f78-9b6d35333285.jpg)
