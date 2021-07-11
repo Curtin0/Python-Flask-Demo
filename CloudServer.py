@@ -17,14 +17,14 @@ while True:
       data = conn.recv(1024)
       conn.send(data)
 
-      data1 = bytes.decode(data)
-      data2 = list(data1)
+      dataString = bytes.decode(data)     
+      dataList = list(dataString)
       
       async def echo(websocket, path):
         
           while True:
-              message = json.dumps(data2)
-              await websocket.send(message)
+              MessageJson = json.dumps(dataList)
+              await websocket.send(MessageJson)
               await asyncio.sleep(3)
               
       start_server = websockets.serve(echo,'localhost',8080)
@@ -33,6 +33,6 @@ while True:
       
       if not data:
           print("The connection has been disconnected")
-          break
+          continue
         
   server.close()
