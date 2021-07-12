@@ -5,10 +5,16 @@ import time
 import json
 import binascii  
 import struct
+import time
 
 server = socket.socket() 
-server.bind(("localhost",20019)) 
+server.bind(('',20019))
 server.listen() 
+
+now = time.localtime()
+nowt = time.strftime("%Y-%m-%d-%H_%M_%S", now)
+
+'这一步就是对时间进行格式化'
 
 while True:
   conn,addr = server.accept()
@@ -17,22 +23,63 @@ while True:
       data = conn.recv(1024)
       conn.send(data)
 
-      dataString = bytes.decode(data)     
-      dataList = list(dataString)
+      #21 41 01 00 1A 00 00 00 02 00 00 00 00 00 02 03 E8 00 28 00 6E 0B B8 0B B8 00 00 4E 20 00 01 02 03 86 44
+
+      dataString = data
+      print(dataString)
       
+      #b'!A\x01\x00\x1a\x00\x00\x00\x02\x00\x00\x00\x00\x00\x02\x03\xe8\x00(\x00n\x0b\xb8\x0b\xb8\x00\x00N \x00\x01\x02\x03\x86D'
+      
+      dataList = list(dataString)
+      print(dataList)
+
+      #[33, 65, 1, 0, 26,// 0, 0, 0, 2,// 0, 0, 0, 0(12),// 0, 2,// 3, 232(16),// 0, 40, //0, 110(20),// 11, 184, //11, 184(24),// 0, 0, 78, 32(28), //0, 1, 2, 3(32),// 134, 68]
+
+      WebdataList =[]
+      
+      WebdataList.append(nowt)
+      WebdataList.append (dataList[8])#now     
+      WebdataList.append(dataList[9]+dataList[10])#bug
+      '''
+      0 无故障
+      1 过压
+      2 欠压
+      4 过载未锁死
+      17 过载锁死
+      8 过温
+      32 输出缺项未锁死
+      48 输出缺项锁死
+      64 输出短路未锁死
+      80 输出短路锁死
+      128 风机堵转未锁死
+      144 风机堵转锁死      
+      '''
+      
+      WebdataList.append(dataList[14])#modul
+      WebdataList.append(dataList[15]*16*16+dataList[16])#rpm
+      WebdataList.append(dataList[17]*16*16+dataList[18])#℃
+      WebdataList.append(dataList[19]*16*16+dataList[20])#U
+      WebdataList.append(dataList[21]*16*16+dataList[22])#u
+      WebdataList.append(dataList[23]*16*16+dataList[24])#v
+      WebdataList.append(dataList[25]*16*16+dataList[26])#w
+      WebdataList.append(dataList[29]*16*16+dataList[30])#t
+      WebdataList.append(dataList[32]*100+dataList[33]*10+dataList[34])#version
+          
       async def echo(websocket, path):
         
           while True:
-              MessageJson = json.dumps(dataList)
+              
+              MessageJson = json.dumps(WebdataList)
               await websocket.send(MessageJson)
               await asyncio.sleep(3)
               
-      start_server = websockets.serve(echo,'localhost',8080)
+      start_server = websockets.serve(echo,'',20020)
       asyncio.get_event_loop().run_until_complete(start_server)
       asyncio.get_event_loop().run_forever()
       
       if not data:
           print("The connection has been disconnected")
-          continue
+          break
         
   server.close()
+
