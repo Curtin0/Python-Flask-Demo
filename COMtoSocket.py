@@ -25,7 +25,7 @@ def recv(serial):
     return data
 
 if __name__ == '__main__':
-    serial = serial.Serial('COM2', 19200, timeout=2)
+    serial = serial.Serial('COM1', 19200, timeout=2)
     if serial.isOpen():
         print("serial open success")
     else:
@@ -35,8 +35,8 @@ if __name__ == '__main__':
         data = recv(serial)
         
         '检查收到的串口数据并打印出来'        
-        by = bytes(data,'gbk')
-        print(by.hex())
+        #by = bytes(data)
+        #print(by.hex())
         
         '向服务器发数据'
         tcpCliSock.send(bytes.fromhex(data))
