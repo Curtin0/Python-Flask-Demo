@@ -12,9 +12,7 @@ server.bind(('',20019))
 server.listen() 
 
 now = time.localtime()
-nowt = time.strftime("%Y-%m-%d-%H_%M_%S", now)
-
-'这一步就是对时间进行格式化'
+nowt = time.strftime("%Y-%m-%d-%H:%M:%S", now)
 
 while True:
   conn,addr = server.accept()
@@ -39,23 +37,9 @@ while True:
       
       WebdataList.append(nowt)
       WebdataList.append (dataList[8])#now     
-      WebdataList.append(dataList[9]+dataList[10])#bug
-      '''
-      0 无故障
-      1 过压
-      2 欠压
-      4 过载未锁死
-      17 过载锁死
-      8 过温
-      32 输出缺项未锁死
-      48 输出缺项锁死
-      64 输出短路未锁死
-      80 输出短路锁死
-      128 风机堵转未锁死
-      144 风机堵转锁死      
-      '''
-      
+      WebdataList.append(dataList[9]+dataList[10])#bug     
       WebdataList.append(dataList[14])#modul
+      
       WebdataList.append(dataList[15]*16*16+dataList[16])#rpm
       WebdataList.append(dataList[17]*16*16+dataList[18])#℃
       WebdataList.append(dataList[19]*16*16+dataList[20])#U
