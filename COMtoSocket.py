@@ -1,11 +1,9 @@
-
 import serial
 from time import sleep
 from socket import *
 
 
 HOST = '112.74.182.249'
-#HOST = '127.0.0.1'
 PORT = 20019
 BUFSIZ = 1024
 ADDR = (HOST, PORT)
@@ -18,10 +16,8 @@ def recv(serial):
     print("enter receive")
     while True:
         '读取串口数据'  
-        data = serial.read_all().decode("gbk","ignore")
-        
-        if data == '':
-            
+        data = serial.read_all().hex()        
+        if data == '':            
             continue
         else:
             break
@@ -43,7 +39,7 @@ if __name__ == '__main__':
         print(by.hex())
         
         '向服务器发数据'
-        tcpCliSock.send(data.encode("gbk","ignore"))
+        tcpCliSock.send(bytes.fromhex(data))
 
         '接收来自服务器的回复'
         dataRec = tcpCliSock.recv(BUFSIZ)
@@ -56,6 +52,6 @@ if __name__ == '__main__':
         
         '将服务端回复发给串口'
         result =serial.write(dataRec)
-        print("写入",result)
+        print("给串口写入字节数量",result)
               
     tcpCliSock.close()
