@@ -36,10 +36,36 @@ while True:
       WebdataList =[]
       
       WebdataList.append(nowt)
-      WebdataList.append (dataList[8])#now     
-      WebdataList.append(dataList[9]+dataList[10])#bug     
+      WebdataList.append (dataList[8])#now
+      '''计算数值 用于前端判定
+      0 空闲
+      1 启动
+      2 运行
+      3 故障
+      4 停机
+
+      '''
+      WebdataList.append(dataList[9]+dataList[10])#bug
+       '''计算数值
+      0 无故障
+      1 过压
+      2 欠压
+      4 过载未锁死
+      17 过载锁死
+      8 过温
+      32 输出缺项未锁死
+      48 输出缺项锁死
+      64 输出短路未锁死
+      80 输出短路锁死
+      128 风机堵转未锁死
+      144 风机堵转锁死      
+      '''
       WebdataList.append(dataList[14])#modul
-      
+      '''计算数值
+      0 停机
+      1 转速运行
+      2 风量运行
+      '''
       WebdataList.append(dataList[15]*16*16+dataList[16])#rpm
       WebdataList.append(dataList[17]*16*16+dataList[18])#℃
       WebdataList.append(dataList[19]*16*16+dataList[20])#U
