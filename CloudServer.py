@@ -19,8 +19,7 @@ while True:
   
   while True:
       data = conn.recv(1024)
-      conn.send(data)
-
+      
       #21 41 01 00 1A 00 00 00 02 00 00 00 00 00 02 03 E8 00 28 00 6E 0B B8 0B B8 00 00 4E 20 00 01 02 03 86 44
 
       dataString = data
@@ -31,7 +30,7 @@ while True:
       dataList = list(dataString)
       print(dataList)
 
-      #[33, 65, 1, 0, 26,// 0, 0, 0, 2,// 0, 0, 0, 0(12),// 0, 2,// 3, 232(16),// 0, 40, //0, 110(20),// 11, 184, //11, 184(24),// 0, 0, 78, 32(28), //0, 1, 2, 3(32),// 134, 68]
+      #[33, 65, 1, 0, 26,// 0, 0, 0, 2,// 0, 0, 0, 0(第12个),// 0, 2,// 3, 232,// 0, 40, //0, 110(第20个),// 11, 184, //11, 184(24),// 0, 0, 78, 32(第28个), //0, 1, 2, 3(第32个),// 134, 68]
 
       WebdataList =[]
       
@@ -43,10 +42,9 @@ while True:
       2 运行
       3 故障
       4 停机
-
       '''
       WebdataList.append(dataList[9]+dataList[10])#bug
-       '''计算数值
+      '''计算数值
       0 无故障
       1 过压
       2 欠压
@@ -75,18 +73,24 @@ while True:
       WebdataList.append(dataList[29]*16*16+dataList[30])#t
       WebdataList.append(dataList[32]*100+dataList[33]*10+dataList[34])#version
           
-      async def echo(websocket, path):
-        
+      async def echo(websocket, path):        
           while True:
-              
               MessageJson = json.dumps(WebdataList)
               await websocket.send(MessageJson)
               await asyncio.sleep(3)
               
+              MessageRecive = await websocket.recv()
+              MessageReciveJson = json.loads(MessageRecive)
+              print(MessageReciveJson)#打印json解析后的数组 [34,65,1,0,6,10,3,1000,70,193]
+                
+              t = bytes(MessageReciveJson)
+              print(t)
+              
+              conn.send(t)
+              
       start_server = websockets.serve(echo,'',20020)
       asyncio.get_event_loop().run_until_complete(start_server)
-      asyncio.get_event_loop().run_forever()
-      
+      asyncio.get_event_loop().run_forever()        
       if not data:
           print("The connection has been disconnected")
           break
