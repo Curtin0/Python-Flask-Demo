@@ -1,39 +1,43 @@
 import socket
 import asyncio
 import websockets
-import time
 import json
-import binascii  
-import struct
 import time
 
 server = socket.socket() 
 server.bind(('',20019))
 server.listen() 
 
-now = time.localtime()
+now = time.localtime()#当前时间
 nowt = time.strftime("%Y-%m-%d-%H:%M:%S", now)
 
+def recv(hex):#socke服务端接收数据
+    while True:
+        data = conn.recv(1024)        
+        if data == '':            
+            continue
+        else:
+            break       
+    return data
+  
 while True:
   conn,addr = server.accept()
   
   while True:
-      data = conn.recv(1024)
+      data = recv(hex)
       
       #21 41 01 00 1A 00 00 00 02 00 00 00 00 00 02 03 E8 00 28 00 6E 0B B8 0B B8 00 00 4E 20 00 01 02 03 86 44
-
-      dataString = data
-      print(dataString)
+      
+      print(data)
       
       #b'!A\x01\x00\x1a\x00\x00\x00\x02\x00\x00\x00\x00\x00\x02\x03\xe8\x00(\x00n\x0b\xb8\x0b\xb8\x00\x00N \x00\x01\x02\x03\x86D'
       
-      dataList = list(dataString)
+      dataList = list(data)
       print(dataList)
 
       #[33, 65, 1, 0, 26,// 0, 0, 0, 2,// 0, 0, 0, 0(第12个),// 0, 2,// 3, 232,// 0, 40, //0, 110(第20个),// 11, 184, //11, 184(24),// 0, 0, 78, 32(第28个), //0, 1, 2, 3(第32个),// 134, 68]
 
-      WebdataList =[]
-      
+      WebdataList =[]     
       WebdataList.append(nowt)
       WebdataList.append (dataList[8])#now
       '''计算数值 用于前端判定
@@ -72,22 +76,25 @@ while True:
       WebdataList.append(dataList[25]*16*16+dataList[26])#w
       WebdataList.append(dataList[29]*16*16+dataList[30])#t
       WebdataList.append(dataList[32]*100+dataList[33]*10+dataList[34])#version
+      WebdataList.append(dataList[0])#加设备地址
           
       async def echo(websocket, path):        
           while True:
+              #发送数据给前端
               MessageJson = json.dumps(WebdataList)
               await websocket.send(MessageJson)
               await asyncio.sleep(3)
               
+              #从前端接收数据发给Socket客户端              
               MessageRecive = await websocket.recv()
               MessageReciveJson = json.loads(MessageRecive)
-              print(MessageReciveJson)#打印json解析后的数组 [34,65,1,0,6,10,3,1000,70,193]
-                
+              print(MessageReciveJson)
+              #打印json解析后的数组 [34,65,1,0,6,10,3,10,00,70,193]               
               t = bytes(MessageReciveJson)
               print(t)
-              
-              conn.send(t)
-              
+              #21 41 01 00 06 0a 03 0a 00 46 c1 
+              conn.send(t)#发送
+   
       start_server = websockets.serve(echo,'',20020)
       asyncio.get_event_loop().run_until_complete(start_server)
       asyncio.get_event_loop().run_forever()        
