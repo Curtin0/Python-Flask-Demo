@@ -4,36 +4,44 @@ import websockets
 import json
 import time
 
+#Socket绑定、监听端口
 server = socket.socket() 
 server.bind(('',20019))
 server.listen() 
 
-now = time.localtime()#当前时间
+#当前时间
+now = time.localtime()
 nowt = time.strftime("%Y-%m-%d-%H:%M:%S", now)
 
-def recv(hex):#socke服务端接收数据
+#socke服务端接收数据
+#收到的数据格式 21 41 01 00 1A 00 00 00 02 00 00 00 00 03 02 03 E8 00 28 00 6E 0B B8 0B B8 0B B8 00 00 4E 20 00 01 02 03 86 44
+def recv():
     while True:
-        data = conn.recv(1024)        
-        if data == '':            
-            continue
+        data = conn.recv(1024)
+        dataList = list(data) 
+        #校验接收的数据长度是否符合,校验码0x8644正确则程序继续，否则忽略接收数据。
+        if (dataList[35] == 134) & (dataList[36] == 68):
+            print("数据格式正确") 
+            break
         else:
-            break       
+            print("数据校验码错误，请确认")
+            continue       
     return data
-  
+
+#循环等待socket客户端发来的数据  
 while True:
   conn,addr = server.accept()
-  
   while True:
-      data = recv(hex)     
-      #21 41 01 00 1A 00 00 00 02 00 00 00 00 03 02 03 E8 00 28 00 6E 0B B8 0B B8 0B B8 00 00 4E 20 00 01 02 03 86 44     
-      print(data)     
-      dataList = list(data)
-      print(dataList)
+      data = recv()     
+      dataList=list(data)
+      print("存入数组中为")
+      print(dataList)     
       
       WebdataList =[]     
       WebdataList.append(nowt)
       WebdataList.append (dataList[8])#now
-      '''计算数值 用于前端判定
+      #用于前端判定
+      '''计算数值
       0 空闲
       1 启动
       2 运行
@@ -47,24 +55,17 @@ while True:
       1 过压
       2 欠压
       4 过载
-      //17 过载锁死
       8 过温
-      //32 输出缺项未锁死
-      32输出缺项
-      //48 输出缺项锁死
-      //64 输出短路未锁死
+      32 输出缺项
       64 输出短路
-      //80 输出短路锁死
-      //128 风机堵转未锁死
-      //144 风机堵转锁死
       128 风机堵转
       '''
       WebdataList.append(dataList[13])
       '''计算数值
       0 未识别
-      1 DC11V
-      2 DC600V
-      3 AC380V
+      1 DC 110V
+      2 DC 600V
+      3 AC 380V
       '''      
       WebdataList.append(dataList[14])#modul
       '''计算数值
@@ -90,14 +91,16 @@ while True:
               await websocket.send(MessageJson)
               await asyncio.sleep(3)
               
-              #从前端接收数据发给Socket客户端              
+              #从前端接收数据             
               MessageRecive = await websocket.recv()
               MessageReciveJson = json.loads(MessageRecive)
+              print("收到前端数据")
               print(MessageReciveJson)
               #打印json解析后的数组             
               t = bytes(MessageReciveJson)
-              print(t)              
-              conn.send(t)#发送
+              print(t)
+              #发送给Socket客户端              
+              conn.send(t)
    
       start_server = websockets.serve(echo,'',20020)
       asyncio.get_event_loop().run_until_complete(start_server)
@@ -105,6 +108,5 @@ while True:
       if not data:
           print("The connection has been disconnected")
           break
-        
+   #关闭socket连接     
   server.close()
-
