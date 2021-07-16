@@ -23,7 +23,8 @@ def recv():
             dataList = list(data)
             #检测校验码0x8644
             if (dataList[35] == 134) & (dataList[36] == 68):
-                print("数据格式正确")               
+                print("数据格式正确，HEX为")
+                print(data)               
                 break
             else:
                  print("数据格式错误，校验码错误，请确认")
@@ -31,18 +32,11 @@ def recv():
         except IndexError:
             print("数据格式错误，长度与预期不符")   
         else:
-            print("数据无异常")
+            print()
     return data
 
-#循环等待socket客户端发来的数据  
-while True:
-  conn,addr = server.accept()
-  while True:
-      data = recv()     
-      dataList=list(data)
-      print("存入数组中为")
-      print(dataList)     
-      
+#通信协议解析计算
+def Webdata():
       WebdataList =[]     
       WebdataList.append(nowt)
       WebdataList.append (dataList[8])#now
@@ -89,11 +83,21 @@ while True:
       WebdataList.append(dataList[29]*16*16+dataList[30])#t
       WebdataList.append(dataList[32]*100+dataList[33]*10+dataList[34])#version
       WebdataList.append(dataList[0])#添加设备地址
-          
+      return WebdataList
+
+#主函数 循环等待socket客户端发来数据  
+while True:
+  conn,addr = server.accept()
+  while True:
+      data = recv()     
+      dataList=list(data)
+      print("数据转换DEC存入数组后为")
+      print(dataList) 
+
       async def echo(websocket, path):        
           while True:
               #发送数据给前端
-              MessageJson = json.dumps(WebdataList)
+              MessageJson = json.dumps(Webdata())
               await websocket.send(MessageJson)
               await asyncio.sleep(3)
               
