@@ -17,15 +17,21 @@ nowt = time.strftime("%Y-%m-%d-%H:%M:%S", now)
 #收到的数据格式 21 41 01 00 1A 00 00 00 02 00 00 00 00 03 02 03 E8 00 28 00 6E 0B B8 0B B8 0B B8 00 00 4E 20 00 01 02 03 86 44
 def recv():
     while True:
-        data = conn.recv(1024)
-        dataList = list(data) 
-        #校验接收的数据长度是否符合,校验码0x8644正确则程序继续，否则忽略接收数据。
-        if (dataList[35] == 134) & (dataList[36] == 68):
-            print("数据格式正确") 
-            break
+        #异常处理 如果检测到丢包则重新接收数据
+        data = conn.recv(1024)      
+        try:
+            dataList = list(data)
+            #检测校验码0x8644
+            if (dataList[35] == 134) & (dataList[36] == 68):
+                print("数据格式正确")               
+                break
+            else:
+                 print("数据格式错误，校验码错误，请确认")
+                 continue 
+        except IndexError:
+            print("数据格式错误，长度与预期不符")   
         else:
-            print("数据校验码错误，请确认")
-            continue       
+            print("数据无异常")
     return data
 
 #循环等待socket客户端发来的数据  
@@ -99,6 +105,7 @@ while True:
               #打印json解析后的数组             
               t = bytes(MessageReciveJson)
               print(t)
+
               #发送给Socket客户端              
               conn.send(t)
    
