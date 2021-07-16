@@ -24,19 +24,12 @@ while True:
   conn,addr = server.accept()
   
   while True:
-      data = recv(hex)
-      
-      #21 41 01 00 1A 00 00 00 02 00 00 00 00 03 02 03 E8 00 28 00 6E 0B B8 0B B8 0B B8 00 00 4E 20 00 01 02 03 86 44
-      
-      print(data)
-      
-      #b'!A\x01\x00\x1a\x00\x00\x00\x02\x00\x00\x00\x00\x00\x02\x03\xe8\x00(\x00n\x0b\xb8\x0b\xb8\x00\x00N \x00\x01\x02\x03\x86D'
-      
+      data = recv(hex)     
+      #21 41 01 00 1A 00 00 00 02 00 00 00 00 03 02 03 E8 00 28 00 6E 0B B8 0B B8 0B B8 00 00 4E 20 00 01 02 03 86 44     
+      print(data)     
       dataList = list(data)
       print(dataList)
-
-      #[33, 65, 1, 0, 26,// 0, 0, 0, 2,// 0, 0, 0, 0(第12个),// 0, 2,// 3, 232,// 0, 40, //0, 110(第20个),// 11, 184, //11, 184(24),// 0, 0, 78, 32(第28个), //0, 1, 2, 3(第32个),// 134, 68]
-      #[33, 65, 1, 0, 26,   0, 0, 0, 2,   0, 128, 0, 0,        3, 2,    3, 232,   0, 40,   0, 110,           11, 184,    11, 184, 11, 184, 0, 0（28）, 78, 32, 0, 1, 2, 3（34）, 134, 68]
+      
       WebdataList =[]     
       WebdataList.append(nowt)
       WebdataList.append (dataList[8])#now
@@ -67,7 +60,7 @@ while True:
       128 风机堵转
       '''
       WebdataList.append(dataList[13])
-      '''
+      '''计算数值
       0 未识别
       1 DC11V
       2 DC600V
@@ -88,7 +81,7 @@ while True:
       WebdataList.append(dataList[25]*16*16+dataList[26])#w
       WebdataList.append(dataList[29]*16*16+dataList[30])#t
       WebdataList.append(dataList[32]*100+dataList[33]*10+dataList[34])#version
-      WebdataList.append(dataList[0])#加设备地址
+      WebdataList.append(dataList[0])#添加设备地址
           
       async def echo(websocket, path):        
           while True:
@@ -101,10 +94,9 @@ while True:
               MessageRecive = await websocket.recv()
               MessageReciveJson = json.loads(MessageRecive)
               print(MessageReciveJson)
-              #打印json解析后的数组 [34,65,1,0,6,10,3,10,00,70,193]               
+              #打印json解析后的数组             
               t = bytes(MessageReciveJson)
-              print(t)
-              #21 41 01 00 06 0a 03 0a 00 46 c1 
+              print(t)              
               conn.send(t)#发送
    
       start_server = websockets.serve(echo,'',20020)
