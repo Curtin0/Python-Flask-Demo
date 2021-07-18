@@ -11,16 +11,18 @@ ADDR = (HOST, PORT)
 tcpCliSock = socket(AF_INET, SOCK_STREAM)
 tcpCliSock.connect(ADDR)
 
+
 def recv(serial):
     print("enter receive")
     while True:
-        #读取串口数据  
-        data = serial.read_all().hex()        
-        if data == '':            
+        #读取串口数据
+        data = serial.read_all().hex()
+        if data == '':
             continue
         else:
-            break       
+            break
     return data
+
 
 if __name__ == '__main__':
     serial = serial.Serial('COM1', 19200, timeout=2)
@@ -33,8 +35,8 @@ if __name__ == '__main__':
         print("serial open failed")
     while True:
         #运行函数 读取数据
-        data = recv(serial)       
-        
+        data = recv(serial)
+
         #向服务器发数据
         tcpCliSock.send(bytes.fromhex(data))
 
@@ -42,10 +44,9 @@ if __name__ == '__main__':
         dataRec = tcpCliSock.recv(BUFSIZ)
         if not data:
             break
-        
-        #将服务端回复发给串口
-        result =serial.write(dataRec)
-        print("给串口写入字节数量",result)
 
-              
+        #将服务端回复发给串口
+        result = serial.write(dataRec)
+        print("给串口写入字节数量", result)
+
     tcpCliSock.close()
