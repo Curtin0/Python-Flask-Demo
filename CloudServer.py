@@ -4,20 +4,20 @@ import websockets
 import json
 import time
 
-#Socket绑定、监听端口
+# Socket绑定、监听端口
 server = socket.socket() 
 server.bind(('',20019))
 server.listen() 
 
-#socke服务端接收数据
-#收到的数据格式 21 41 01 00 1A 00 00 00 02 00 00 00 00 03 02 03 E8 00 28 00 6E 0B B8 0B B8 0B B8 00 00 4E 20 00 01 02 03 86 44
-def recv():
+# socke服务端接收数据
+# 收到的数据格式 21 41 01 00 1A 00 00 00 02 00 00 00 00 03 02 03 E8 00 28 00 6E 0B B8 0B B8 0B B8 00 00 4E 20 00 01 02 03 86 44
+def recv(conn):
     while True:
-        #异常处理 如果检测到丢包则重新接收数据
+        # 异常处理 如果检测到丢包则重新接收数据
         data = conn.recv(1024)      
         try:
             dataList = list(data)
-            #检测校验码0x8644
+            # 检测校验码0x8644
             if (dataList[35]) & (dataList[36]):
                 print("数据格式正确，HEX为")
                 print(data)               
@@ -30,14 +30,15 @@ def recv():
     return data
 
 #通信协议解析计算
-def Webdata():
+def Webdata(dataList):
       #当前时间
       now = time.localtime()
       nowt = time.strftime("%Y-%m-%d-%H:%M:%S", now)
+
       WebdataList =[]     
       WebdataList.append(nowt)
       WebdataList.append (dataList[8])#now
-      #用于前端判定
+      # 用于前端判定
       '''计算数值
       0 空闲
       1 启动
@@ -86,7 +87,7 @@ def Webdata():
 while True:
   conn,addr = server.accept()
   while True:
-      data = recv()     
+      data = recv(conn)     
       dataList=list(data)
       print("数据转换DEC存入数组后为")
       print(dataList) 
@@ -94,7 +95,7 @@ while True:
       async def echo(websocket, path) :        
           while True:
               #转码json发送数据给前端
-              MessageJson = json.dumps(Webdata())
+              MessageJson = json.dumps(Webdata(dataList))
               await websocket.send(MessageJson)
               await asyncio.sleep(3)
               
