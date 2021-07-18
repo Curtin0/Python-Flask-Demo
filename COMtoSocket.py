@@ -26,7 +26,7 @@ if __name__ == '__main__':
     serial = serial.Serial('COM1', 19200, timeout=2)
     if serial.isOpen():
         print("serial open success")
-        print("初始化风机:自动判断输入源，风量调节模式，3级风量")
+        print("初始化指令:自动判断输入源，风量调节模式，3级风量")
         dataStart = b'!A\x01\x00\x06\x00\x02\x00\x03\x00\x00F\xc1'
         serial.write(dataStart)
     else:
