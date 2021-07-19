@@ -15,7 +15,7 @@ server.listen()
 
 def recv(conn):
     while True:
-        # 异常处理 如果检测到丢包则重新接收数据
+        # 如果检测到丢包则重新接收数据
         data = conn.recv(1024)
         try:
             dataList = list(data)
@@ -31,7 +31,7 @@ def recv(conn):
             print("数据格式错误，长度与预期不符")
     return data
 
-# 通信协议解析计算
+# 通信协议解析
 
 
 def Webdata(dataList):
@@ -97,6 +97,7 @@ if __name__ == '__main__':
             async def echo(websocket, path):
                 while True:
                     data = recv(conn)
+                    time.sleep(3)
                     dataList = list(data)
                     print("数据转换DEC存入数组后为")
                     print(dataList)
@@ -107,15 +108,15 @@ if __name__ == '__main__':
                     await asyncio.sleep(3)
 
                     # 从前端接收json数据
-                    MessageRecive = await websocket.recv()
-                    MessageReciveJson = json.loads(MessageRecive)
+                    MessageReceive = await websocket.recv()
+                    MessageReceiveJson = json.loads(MessageReceive)
 
                     # 打印json解码后的数组
                     print("收到前端数据")
-                    print(MessageReciveJson)
+                    print(MessageReceiveJson)
 
                     # dec数据转换hex
-                    bytedata = bytes(MessageReciveJson)
+                    bytedata = bytes(MessageReceiveJson)
                     print(bytedata)
 
                     # 发送hex格式给Socket客户端
