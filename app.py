@@ -87,7 +87,7 @@ def record_send():
                     now_time=now_time)
 
     data_list = [0,0,0, int(data['socket_client']), int(data['socket_client_model']),
-                 int(data['address']),65,1,0,12, int(data['source']), int(data['mode']),0,
+                 int(data['address']),65,1,0,6, int(data['source']), int(data['mode']),0,
                  int(data['level'])]
     rot_speed = str(data['rot_speed'])
     

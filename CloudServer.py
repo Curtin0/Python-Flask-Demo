@@ -36,7 +36,7 @@ def recv(conn):
         # 异常处理 如果检测到丢包则重新接收数据
         data = conn.recv(1024)
         # CRC计算 b c为示例0x8B7D拆分转换十进制 即139和125
-        checkdata = data[5:40]
+        checkdata = data[5:48]
         crcrecv = calc_crc(checkdata)
         a = crcrecv.encode("utf-8")
         b = int(a[2:4], 16)
@@ -44,7 +44,8 @@ def recv(conn):
         if data:
             try:
                 dataList = list(data)
-                if (dataList[40] == b) and (dataList[41] == c):
+                if (dataList[48] == b) and (dataList[49] == c):
+                #if (dataList[40]) and (dataList[41]):
                     print("数据格式正确，HEX为:", data)
                     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     print(str(data.hex()))
@@ -88,8 +89,8 @@ def transfer_data(dataList):
     data_dict.update({'u_current': dataList[26] * 16 * 16 + dataList[27]})
     data_dict.update({'v_current': dataList[28] * 16 * 16 + dataList[29]})
     data_dict.update({'w_current': dataList[30] * 16 * 16 + dataList[31]})
-    data_dict.update({'run_time': dataList[34] * 16 * 16 + dataList[35]})
-    data_dict.update({'version': dataList[37] * 100 + dataList[38] * 10 + dataList[39]})
+    data_dict.update({'run_time': dataList[42] * 16 * 16 + dataList[43]})
+    data_dict.update({'version': dataList[45] * 100 + dataList[46] * 10 + dataList[47]})
     data_dict.update({'address': dataList[5]})
 
     print(data_dict)
